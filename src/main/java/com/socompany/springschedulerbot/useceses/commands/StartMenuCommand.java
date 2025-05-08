@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.List;
 
@@ -24,55 +23,28 @@ public class StartMenuCommand implements Command {
     @Value("${bot.name}")
     private String botName;
 
-    private final UserService userService;
-
 
     @Override
     public void execute(CommonInfo commonInfo) {
-        log.info("Received start menu command");
-
-        UserRequestDto userRequestDto = new UserRequestDto();
-        userRequestDto.setChatId(commonInfo.getChatId());
-
-        userService.save(userRequestDto);
+        log.info("Handling start command for user {}", commonInfo.getChatId());
 
         sendStartMenu(commonInfo);
     }
 
     private void sendStartMenu(CommonInfo commonInfo) {
         String answer = "Вітаю в " + botName + "! \uD83C\uDF31\n\n" +
-                "*Що я можу?*\n" +
+                "*Ось з чим я можу тобі допомогти:*\n\n" +
                 "🔔 Відправляти тобі повідомлення кожного дня в заданий час (погода, події, біткоін та інше)\n" +
                 "📝 Допоможу не забути про важливі речі через ToDo список.\n\n" +
                 "Хочеш налаштувати?";
 
         List<ButtonData> buttonDataList = List.of(
-                new ButtonData("🕑 Налаштувати щоденні нагадування", "/scheduler"),
-                new ButtonData("📝 Керувати ToDo ", "/trends"),
+                new ButtonData("🕑 Щоденні нагадування", "/scheduler"),
+                new ButtonData("📝 ToDo список ", "/trends"),
                 new ButtonData("⚙️ Налаштування", "/settings"),
                 new ButtonData("❓ Допомога", "/help")
         );
 
-        try {
-            if (commonInfo.getMessageId() != 0) {
-                telegramBotService.editMessage(
-                        commonInfo.getChatId(),
-                        commonInfo.getMessageId(),
-                        answer,
-                        buttonDataList,
-                        2,
-                        false
-                );
-            } else {
-                telegramBotService.createMessage(
-                        commonInfo.getChatId(),
-                        answer,
-                        buttonDataList,
-                        2
-                );
-            }
-        } catch (TelegramApiException e) {
-            log.error("Telegram API Exception", e);
-        }
+        telegramBotService.editMessage(commonInfo.getChatId(), commonInfo.getMessageId(), answer, buttonDataList, 2, false);
     }
 }

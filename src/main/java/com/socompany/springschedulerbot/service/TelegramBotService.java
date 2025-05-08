@@ -40,7 +40,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
         this.botName = env.getProperty("bot.name");
         this.commandHandler = commandHandler;
         List<BotCommand> commandList = List.of(
-                new BotCommand(START.getCommand(), "Get welcome message! 🌟"));
+                new BotCommand(START.getCommand(), "Отримайте стартове меню бота! 🤖"));
 
         try {
             this.execute(new SetMyCommands(commandList, new BotCommandScopeDefault(), null));
@@ -79,6 +79,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
 
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(chatId);
+        editMessageText.enableMarkdown(true);
         editMessageText.setMessageId(messageId);
         editMessageText.setText(text);
 
@@ -124,6 +125,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
 
     }
 
+
     private InlineKeyboardMarkup buildKeyboard(List<ButtonData> buttons, int buttonsPerRow, boolean addBackButton) {
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
 
@@ -143,6 +145,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
             rows.add(row);
         }
 
+        // Add Back Button if needed (addBackButton = true)
         if (addBackButton) {
             InlineKeyboardButton backButton = new InlineKeyboardButton();
             backButton.setText("\uD83D\uDD19 Назад");

@@ -6,6 +6,7 @@ import com.socompany.springschedulerbot.persistant.dto.UserRequestDto;
 import com.socompany.springschedulerbot.persistant.dto.UserResponseDto;
 import com.socompany.springschedulerbot.service.UserService;
 import com.socompany.springschedulerbot.useceses.commands.GoBackCommand;
+import com.socompany.springschedulerbot.useceses.commands.enums.CommandType;
 import com.socompany.springschedulerbot.useceses.commands.interfaces.Command;
 import com.socompany.springschedulerbot.useceses.commands.SchedulerMenuCommand;
 import com.socompany.springschedulerbot.useceses.commands.StartMenuCommand;
@@ -13,26 +14,26 @@ import com.socompany.springschedulerbot.useceses.util.StateManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static com.socompany.springschedulerbot.useceses.commands.enums.CommandType.*;
 
 @Service
 @Slf4j
 public class CommandHandlerImpl implements CommandHandler {
-    private final Map<String, Command>  commandMap = new ConcurrentHashMap<>();
+    // Beans
     private final StateManager stateManager;
     private final UserService userService;
 
-    // Toggle functions like /weather | /bitcoin ...
-    private static final Map<String, Function<UserResponseDto, UserRequestDto>> TOGGLE_FUNCTIONS = Map.of(
-            WEATHER.getCommand(), user -> toggleField(user, u -> u.setWeatherReminderEnabled(!u.isWeatherReminderEnabled())),
-            EVENTS.getCommand(), user -> toggleField(user, u -> u.setEventsReminderEnabled(!u.isEventsReminderEnabled())),
-            BITCOIN.getCommand(), user -> toggleField(user, u -> u.setBitcoinPriceReminderEnabled(!u.isBitcoinPriceReminderEnabled())),
-            CURRENCY.getCommand(), user -> toggleField(user, u -> u.setCurrencyPriceReminderEnabled(!u.isCurrencyPriceReminderEnabled()))
+    private final Map<String, Command>  commandMap = new ConcurrentHashMap<>();
+    private final List<String> TOGGLE_FUNCTIONS = List.of(
+            WEATHER.getCommand(),
+            EVENTS.getCommand(),
+            BITCOIN.getCommand(),
+            CURRENCY.getCommand()
     );
 
     // Constructor :)
@@ -60,41 +61,20 @@ public class CommandHandlerImpl implements CommandHandler {
                 Thread.currentThread().getName(), command, commonInfo.getChatId());
         Command cmd = commandMap.get(command);
 
-        if (TOGGLE_FUNCTIONS.containsKey(command)) {
-            handleToggleCommand(command, commonInfo);
-            commandMap.get(SCHEDULER.getCommand()).execute(commonInfo);
+        if (TOGGLE_FUNCTIONS.contains(command)) {
+            log.info("User {} toggled option {}", commonInfo.getChatId(), command);
+            userService.toggleReminderOption(commonInfo.getChatId(), CommandType.getCommandType(command));
+            cmd = commandMap.get(SCHEDULER.getCommand());
         }
 
         if(cmd != null) {
-            if(!command.equals("/back")) {
+            if(!command.equals("/back") && !TOGGLE_FUNCTIONS.contains(command)) {
                 stateManager.pushState(commonInfo.getChatId(), cmd);
             }
             cmd.execute(commonInfo);
         } else{
             log.warn("Command {} not found in commandMap", command);
         }
-    }
-
-    private static UserRequestDto toggleField(UserResponseDto user, Consumer<UserRequestDto> fieldUpdater) {
-        UserRequestDto userRequestDto = new UserRequestDto();
-        userRequestDto.setChatId(user.getChatId());
-        fieldUpdater.accept(userRequestDto);
-        return userRequestDto;
-    }
-
-    public void handleToggleCommand(String commandType, CommonInfo commonInfo) {
-        Function<UserResponseDto, UserRequestDto> toggleFunction = TOGGLE_FUNCTIONS.get(commandType);
-        if (toggleFunction == null) {
-            log.warn("Command {} is not supported for toggling", commandType);
-            return;
-        }
-
-        userService.findByChatId(commonInfo.getChatId()).ifPresentOrElse(
-                user -> {
-                    userService.toggleReminderOption(commonInfo.getChatId(), toggleFunction);
-                },
-                () -> log.warn("User with chatId {} not found", commonInfo.getChatId())
-        );
     }
 
 }

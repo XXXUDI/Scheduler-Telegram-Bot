@@ -4,7 +4,9 @@ import com.socompany.springschedulerbot.mapper.UserRequestMapper;
 import com.socompany.springschedulerbot.mapper.UserResponseMapper;
 import com.socompany.springschedulerbot.persistant.dto.UserRequestDto;
 import com.socompany.springschedulerbot.persistant.dto.UserResponseDto;
+import com.socompany.springschedulerbot.persistant.entity.User;
 import com.socompany.springschedulerbot.repository.UserRepository;
+import com.socompany.springschedulerbot.useceses.commands.enums.CommandType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,7 +29,7 @@ public class UserService {
     }
 
     public Optional<UserResponseDto> findByChatId(Long chatId) {
-        return  userRepository.findById(chatId).map(userResponseMapper::map);
+        return userRepository.findById(chatId).map(userResponseMapper::map);
     }
 
     public UserResponseDto save(UserRequestDto userRequestDto) {
@@ -47,11 +49,45 @@ public class UserService {
                 .map(userResponseMapper::map);
     }
 
+    public Optional<UserResponseDto> toggleReminderOption(Long chatId, CommandType reminderOption) {
+        log.info("Toggling reminder option {} for chatId {}", reminderOption, chatId);
+        return userRepository.findByChatId(chatId)
+                .map(user -> {
+                    UserRequestDto updatedUser = updateUserReminder(user, reminderOption);
+                    return userRequestMapper.map(updatedUser, user);
+                })
+                .map(userRepository::saveAndFlush)
+                .map(userResponseMapper::map);
+    }
 
-    public Optional<UserResponseDto> toggleReminderOption(Long chatId, Function<UserResponseDto, UserRequestDto> updater) {
-        return findByChatId(chatId)
-                .map(updater)
-                .flatMap(this::update);
+    public UserRequestDto updateUserReminder(User user, CommandType reminderOption) {
+        UserRequestDto result = new UserRequestDto();
+        result.setChatId(user.getChatId());
+        result.setAdmin(user.isAdmin());
+        result.setEventsReminderEnabled(user.isEventsReminderEnabled());
+        result.setWeatherReminderEnabled(user.isWeatherReminderEnabled());
+        result.setBitcoinPriceReminderEnabled(user.isBitcoinPriceReminderEnabled());
+        result.setDailyReminderTime(user.getDailyReminderTime());
+        result.setDailyReminderTime(user.getDailyReminderTime());
+
+        switch (reminderOption) {
+            case WEATHER:
+                result.setWeatherReminderEnabled(!user.isWeatherReminderEnabled());
+                break;
+            case EVENTS:
+                result.setEventsReminderEnabled(!user.isEventsReminderEnabled());
+                break;
+            case BITCOIN:
+                result.setBitcoinPriceReminderEnabled(!user.isBitcoinPriceReminderEnabled());
+                break;
+            case CURRENCY:
+                result.setCurrencyPriceReminderEnabled(!user.isCurrencyPriceReminderEnabled());
+                break;
+            default:
+                log.error("Unsupported reminder option: {}", reminderOption);
+                throw new IllegalArgumentException("Unsupported reminder option: " + reminderOption);
+        }
+        return result;
     }
 
 
