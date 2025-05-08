@@ -97,17 +97,6 @@ public class TelegramBotService extends TelegramLongPollingBot {
         }
     }
 
-    public void deleteMessage(Long chatId, int messageId) {
-        DeleteMessage deleteMessage = new DeleteMessage();
-        deleteMessage.setChatId(chatId);
-        deleteMessage.setMessageId(messageId);
-        try {
-            execute(deleteMessage);
-        } catch (TelegramApiException e) {
-            log.error("Error deleting Message", e);
-        }
-    }
-
     public void createMessage(Long chatId, String text, List<ButtonData> buttons, int buttonsPerRow) throws TelegramApiException {
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
