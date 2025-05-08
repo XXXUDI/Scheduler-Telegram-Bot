@@ -47,7 +47,8 @@ public class UserService {
                 .map(userResponseMapper::map);
     }
 
-    public Optional<UserResponseDto> updateWith(Long chatId, Function<UserResponseDto, UserRequestDto> updater) {
+
+    public Optional<UserResponseDto> toggleReminderOption(Long chatId, Function<UserResponseDto, UserRequestDto> updater) {
         return findByChatId(chatId)
                 .map(updater)
                 .flatMap(this::update);

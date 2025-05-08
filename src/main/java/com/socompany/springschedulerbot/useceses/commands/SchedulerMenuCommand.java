@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
+
 import static com.socompany.springschedulerbot.useceses.commands.enums.CommandType.*;
 
 @Component
@@ -22,6 +23,7 @@ public class SchedulerMenuCommand implements Command {
 
     private final TelegramBotService telegramBotService;
     private final UserService userService;
+
 
     private static final Map<Boolean, String> EMOJIS = Map.of(
             true, "✅",
@@ -52,6 +54,9 @@ public class SchedulerMenuCommand implements Command {
         );
     }
 
+
+
+
     private String getMenuText() {
         return """
                 Налаштуй щоденні повідомлення: 
@@ -59,6 +64,8 @@ public class SchedulerMenuCommand implements Command {
                 Вибери лише те, що хочеш получати:
                 """;
     }
+
+
 
     private List<ButtonData> buildButtons(UserResponseDto user) {
         return List.of(
