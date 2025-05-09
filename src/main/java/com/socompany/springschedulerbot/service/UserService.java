@@ -1,16 +1,19 @@
 package com.socompany.springschedulerbot.service;
 
+import com.socompany.springschedulerbot.common.CommonInfo;
 import com.socompany.springschedulerbot.mapper.UserRequestMapper;
 import com.socompany.springschedulerbot.mapper.UserResponseMapper;
 import com.socompany.springschedulerbot.persistant.dto.UserRequestDto;
 import com.socompany.springschedulerbot.persistant.dto.UserResponseDto;
 import com.socompany.springschedulerbot.persistant.entity.User;
+import com.socompany.springschedulerbot.persistant.enums.CountryCode;
 import com.socompany.springschedulerbot.repository.UserRepository;
 import com.socompany.springschedulerbot.useceses.commands.enums.CommandType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -26,6 +29,10 @@ public class UserService {
 
     public List<UserResponseDto> findAll() {
         return userRepository.findAll().stream().map(userResponseMapper::map).toList();
+    }
+
+    public List<UserResponseDto> findByDailyReminderTime(LocalTime time) {
+        return userRepository.findByDailyReminderTime(time).stream().map(userResponseMapper::map).toList();
     }
 
     public Optional<UserResponseDto> findByChatId(Long chatId) {
@@ -49,26 +56,52 @@ public class UserService {
                 .map(userResponseMapper::map);
     }
 
+    public void registerUser(CommonInfo commonInfo) {
+        // Створення користувача з дефолтними налаштуваннями
+        UserRequestDto newUser = new UserRequestDto();
+        newUser.setChatId(commonInfo.getChatId());
+        newUser.setAdmin(false); // дефолтне значення
+        newUser.setWeatherReminderEnabled(false); // дефолтне значення
+        newUser.setEventsReminderEnabled(false); // дефолтне значення
+        newUser.setBitcoinPriceReminderEnabled(false); // дефолтне значення
+        newUser.setCurrencyPriceReminderEnabled(false); // дефолтне значення
+        newUser.setDailyReminderTime(null);
+        newUser.setCountryCode(CountryCode.UA);// дефолтне значення або час за замовчуванням
+
+        // Виклик `UserService` для збереження користувача в базу
+        log.info("Registering new user with chatId {}", commonInfo.getChatId());
+        save(newUser);
+
+        // Відразу створюємо SchedulerMenu для нового користувача
+    }
+
     public Optional<UserResponseDto> toggleReminderOption(Long chatId, CommandType reminderOption) {
         log.info("Toggling reminder option {} for chatId {}", reminderOption, chatId);
         return userRepository.findByChatId(chatId)
                 .map(user -> {
-                    UserRequestDto updatedUser = updateUserReminder(user, reminderOption);
+                    UserRequestDto updatedUser = updateUserReminderOption(user, reminderOption);
                     return userRequestMapper.map(updatedUser, user);
                 })
                 .map(userRepository::saveAndFlush)
                 .map(userResponseMapper::map);
     }
 
-    public UserRequestDto updateUserReminder(User user, CommandType reminderOption) {
-        UserRequestDto result = new UserRequestDto();
-        result.setChatId(user.getChatId());
-        result.setAdmin(user.isAdmin());
-        result.setEventsReminderEnabled(user.isEventsReminderEnabled());
-        result.setWeatherReminderEnabled(user.isWeatherReminderEnabled());
-        result.setBitcoinPriceReminderEnabled(user.isBitcoinPriceReminderEnabled());
-        result.setDailyReminderTime(user.getDailyReminderTime());
-        result.setDailyReminderTime(user.getDailyReminderTime());
+    public Optional<UserResponseDto> updateReminderTime(Long chatId, LocalTime time) {
+        return userRepository.findByChatId(chatId)
+                .map(user -> {
+                    user.setDailyReminderTime(time);
+                    UserRequestDto updatedUser = convertUserToUserRequestDto(user);
+                    updatedUser.setDailyReminderTime(time);
+                    return userRequestMapper.map(updatedUser, user);
+                })
+                .map(userRepository::saveAndFlush)
+                .map(userResponseMapper::map);
+    }
+
+
+
+    private UserRequestDto updateUserReminderOption(User user, CommandType reminderOption) {
+        UserRequestDto result = convertUserToUserRequestDto(user);
 
         switch (reminderOption) {
             case WEATHER:
@@ -87,6 +120,20 @@ public class UserService {
                 log.error("Unsupported reminder option: {}", reminderOption);
                 throw new IllegalArgumentException("Unsupported reminder option: " + reminderOption);
         }
+        return result;
+    }
+
+    private UserRequestDto convertUserToUserRequestDto(User user) {
+        UserRequestDto result = new UserRequestDto();
+        result.setChatId(user.getChatId());
+        result.setAdmin(user.isAdmin());
+        result.setEventsReminderEnabled(user.isEventsReminderEnabled());
+        result.setWeatherReminderEnabled(user.isWeatherReminderEnabled());
+        result.setBitcoinPriceReminderEnabled(user.isBitcoinPriceReminderEnabled());
+        result.setDailyReminderTime(user.getDailyReminderTime());
+        result.setCurrencyPriceReminderEnabled(user.isCurrencyPriceReminderEnabled());
+        result.setCountryCode(user.getCountryCode());
+
         return result;
     }
 

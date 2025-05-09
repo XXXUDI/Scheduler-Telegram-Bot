@@ -52,27 +52,13 @@ public class SchedulerMenuCommand implements Command {
                             true
                     );
                 },
-                () -> registerUser(commonInfo));
+                () -> {
+                    userService.registerUser(commonInfo);
+                    execute(commonInfo);
+                });
     }
 
-    private void registerUser(CommonInfo commonInfo) {
-        // Створення користувача з дефолтними налаштуваннями
-        UserRequestDto newUser = new UserRequestDto();
-        newUser.setChatId(commonInfo.getChatId());
-        newUser.setAdmin(false); // дефолтне значення
-        newUser.setWeatherReminderEnabled(false); // дефолтне значення
-        newUser.setEventsReminderEnabled(false); // дефолтне значення
-        newUser.setBitcoinPriceReminderEnabled(false); // дефолтне значення
-        newUser.setCurrencyPriceReminderEnabled(false); // дефолтне значення
-        newUser.setDailyReminderTime(null); // дефолтне значення або час за замовчуванням
 
-        // Виклик `UserService` для збереження користувача в базу
-        log.info("Registering new user with chatId {}", commonInfo.getChatId());
-        userService.save(newUser);
-
-        // Відразу створюємо SchedulerMenu для нового користувача
-        execute(commonInfo);
-    }
 
     private String getMenuText() {
         return """

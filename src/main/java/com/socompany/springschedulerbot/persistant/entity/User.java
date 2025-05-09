@@ -1,13 +1,12 @@
 package com.socompany.springschedulerbot.persistant.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.socompany.springschedulerbot.persistant.enums.CountryCode;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalTime;
+import java.util.Locale;
 
 @Entity
 @Table(name = "user_table")
@@ -28,5 +27,8 @@ public class User extends BaseEntity {
     private boolean isCurrencyPriceReminderEnabled = false;
 
     private LocalTime dailyReminderTime;
+
+    @Enumerated(EnumType.STRING)
+    private CountryCode countryCode = CountryCode.UA;
 
 }

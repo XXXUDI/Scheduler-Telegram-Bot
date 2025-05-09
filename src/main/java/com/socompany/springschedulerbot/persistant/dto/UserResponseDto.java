@@ -1,5 +1,6 @@
 package com.socompany.springschedulerbot.persistant.dto;
 
+import com.socompany.springschedulerbot.persistant.enums.CountryCode;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,4 +23,10 @@ public class UserResponseDto {
     private boolean isCurrencyPriceReminderEnabled = false;
 
     private LocalTime dailyReminderTime;
+
+    private CountryCode countryCode;
+
+    public boolean isReminderEnabled() {
+        return isWeatherReminderEnabled || isEventsReminderEnabled || isBitcoinPriceReminderEnabled || isCurrencyPriceReminderEnabled;
+    }
 }

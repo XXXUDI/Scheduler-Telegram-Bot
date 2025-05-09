@@ -5,11 +5,9 @@ import com.socompany.springschedulerbot.common.CommonInfo;
 import com.socompany.springschedulerbot.persistant.dto.UserRequestDto;
 import com.socompany.springschedulerbot.persistant.dto.UserResponseDto;
 import com.socompany.springschedulerbot.service.UserService;
-import com.socompany.springschedulerbot.useceses.commands.GoBackCommand;
+import com.socompany.springschedulerbot.useceses.commands.*;
 import com.socompany.springschedulerbot.useceses.commands.enums.CommandType;
 import com.socompany.springschedulerbot.useceses.commands.interfaces.Command;
-import com.socompany.springschedulerbot.useceses.commands.SchedulerMenuCommand;
-import com.socompany.springschedulerbot.useceses.commands.StartMenuCommand;
 import com.socompany.springschedulerbot.useceses.util.StateManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -41,7 +39,10 @@ public class CommandHandlerImpl implements CommandHandler {
             StateManager stateManager,
             StartMenuCommand startMenuCommand,
             SchedulerMenuCommand schedulerMenuCommand,
-            GoBackCommand goBackCommand, UserService userService) {
+            ChangeDateCommand changeDateCommand,
+            SettingsMenuCommand settingsMenuCommand,
+            GoBackCommand goBackCommand,
+            UserService userService) {
         this.stateManager = stateManager;
         this.userService = userService;
 
@@ -51,6 +52,8 @@ public class CommandHandlerImpl implements CommandHandler {
         // Menu Commands
         commandMap.put(START.getCommand(), startMenuCommand);
         commandMap.put(SCHEDULER.getCommand(), schedulerMenuCommand);
+        commandMap.put(SETTINGS.getCommand(), settingsMenuCommand);
+        commandMap.put(CHANGE_DATE.getCommand(), changeDateCommand);
         // ...
     }
 
@@ -68,7 +71,7 @@ public class CommandHandlerImpl implements CommandHandler {
         }
 
         if(cmd != null) {
-            if(!command.equals("/back") && !TOGGLE_FUNCTIONS.contains(command)) {
+            if(!command.equals("/back") && !TOGGLE_FUNCTIONS.contains(command) && !command.equals(CHANGE_DATE.getCommand())) {
                 stateManager.pushState(commonInfo.getChatId(), cmd);
             }
             cmd.execute(commonInfo);

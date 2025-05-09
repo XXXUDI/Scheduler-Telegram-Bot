@@ -3,6 +3,7 @@ package com.socompany.springschedulerbot.service;
 import com.socompany.springschedulerbot.common.CommonInfo;
 import com.socompany.springschedulerbot.persistant.dto.ButtonData;
 import com.socompany.springschedulerbot.useceses.handlers.CommandHandler;
+import com.socompany.springschedulerbot.useceses.listeners.MessageAbstractListener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
@@ -32,13 +33,18 @@ import static com.socompany.springschedulerbot.useceses.commands.enums.CommandTy
 public class TelegramBotService extends TelegramLongPollingBot {
 
     private final String botName;
-    private final CommandHandler commandHandler;;
+    private final CommandHandler commandHandler;
+    private final List<MessageAbstractListener> messageAbstractListeners;
 
     public TelegramBotService(Environment env,
-                              @Lazy CommandHandler commandHandler) {
+                              @Lazy CommandHandler commandHandler,
+                              @Lazy List<MessageAbstractListener> messageAbstractListeners) {
         super(env.getProperty("bot.token"));
+
         this.botName = env.getProperty("bot.name");
         this.commandHandler = commandHandler;
+        this.messageAbstractListeners = messageAbstractListeners;
+
         List<BotCommand> commandList = List.of(
                 new BotCommand(START.getCommand(), "Отримайте стартове меню бота! 🤖"));
 
@@ -57,6 +63,11 @@ public class TelegramBotService extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+
+        if(processMessageListeners(update)) {
+            return;
+        }
+
         if(update.hasMessage() && update.getMessage().hasText()) {
             log.info("Received update with text: " + update.getMessage().getText());
             Message message = update.getMessage();
@@ -73,6 +84,15 @@ public class TelegramBotService extends TelegramLongPollingBot {
             CommonInfo commonInfo = getCommonInfo(messageId, chatId);
             commandHandler.handleCommand(data, commonInfo);
         }
+    }
+
+    private boolean processMessageListeners(Update update) {
+        for(MessageAbstractListener listener : messageAbstractListeners) {
+            if(listener.process(update)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void editMessage(Long chatId, int messageId, String text, List<ButtonData> buttons, int buttonsPerRow, boolean showBackButton) {

@@ -17,6 +17,7 @@ public class UserRequestMapper implements Mapper<UserRequestDto, User> {
         user.setCurrencyPriceReminderEnabled(from.isCurrencyPriceReminderEnabled());
         user.setEventsReminderEnabled(from.isEventsReminderEnabled());
         user.setBitcoinPriceReminderEnabled(from.isBitcoinPriceReminderEnabled());
+        user.setCountryCode(from.getCountryCode());
 
         return user;
     }
@@ -31,6 +32,7 @@ public class UserRequestMapper implements Mapper<UserRequestDto, User> {
         toObj.setEventsReminderEnabled(fromObj.isEventsReminderEnabled());
         toObj.setBitcoinPriceReminderEnabled(fromObj.isBitcoinPriceReminderEnabled());
         toObj.setWeatherReminderEnabled(fromObj.isWeatherReminderEnabled());
+        toObj.setCountryCode(fromObj.getCountryCode());
 
         return toObj;
     }

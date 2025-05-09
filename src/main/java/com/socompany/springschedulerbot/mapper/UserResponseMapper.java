@@ -15,6 +15,8 @@ public class UserResponseMapper implements Mapper<User, UserResponseDto>{
         responseDto.setChatId(user.getChatId());
         responseDto.setAdmin(user.isAdmin());
 
+        responseDto.setCountryCode(user.getCountryCode());
+
         responseDto.setEventsReminderEnabled(user.isEventsReminderEnabled());
         responseDto.setWeatherReminderEnabled(user.isWeatherReminderEnabled());
         responseDto.setCurrencyPriceReminderEnabled(user.isCurrencyPriceReminderEnabled());

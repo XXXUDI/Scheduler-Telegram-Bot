@@ -4,11 +4,15 @@ import com.socompany.springschedulerbot.common.CommonInfo;
 import com.socompany.springschedulerbot.service.TelegramBotService;
 import com.socompany.springschedulerbot.service.UserService;
 import com.socompany.springschedulerbot.useceses.commands.interfaces.Command;
+import com.socompany.springschedulerbot.useceses.util.SessionManager;
+import com.socompany.springschedulerbot.useceses.util.StateManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.util.List;
 
 @Component
 @Slf4j
@@ -16,13 +20,17 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class ChangeDateCommand implements Command {
 
     private final UserService userService;
+    private final SessionManager sessionManager;
     private final TelegramBotService telegramBotService;
 
     @Override
     public void execute(CommonInfo commonInfo) {
         log.info("Handling change date command for user {}", commonInfo.getChatId());
 
-        SendMessage msg = createAndSendMessage(commonInfo);
+        sessionManager.setSession(commonInfo.getChatId(), "CHANGE_DATE");
+
+        createAndSendMessage(commonInfo);
+
     }
 
     private SendMessage createAndSendMessage(CommonInfo commonInfo) {
@@ -37,7 +45,7 @@ public class ChangeDateCommand implements Command {
 
         try {
             log.info("Sending message to user {}", commonInfo.getChatId());
-            telegramBotService.createMessage(commonInfo.getChatId(), text, null, 1);
+            telegramBotService.createMessage(commonInfo.getChatId(), text, List.of(/*0 elem.*/), 1);
         } catch (TelegramApiException e) {
             log.error("Error sending message to user {}", commonInfo.getChatId(), e);
             e.printStackTrace();

@@ -1,5 +1,6 @@
 package com.socompany.springschedulerbot.persistant.dto;
 
+import com.socompany.springschedulerbot.persistant.enums.CountryCode;
 import lombok.Data;
 
 import java.time.LocalTime;
@@ -20,4 +21,6 @@ public class UserRequestDto {
     private boolean isCurrencyPriceReminderEnabled = false;
 
     private LocalTime dailyReminderTime;
+
+    private CountryCode countryCode;
 }

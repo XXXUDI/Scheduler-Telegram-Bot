@@ -9,9 +9,12 @@ public enum CommandType {
     BITCOIN ("/bitcoin"),
     CURRENCY ("/currency"),
     CHANGE_DATE ("/changeDate"),
+    CHANGE_TIMEZONE("/changeTimezone"),
     ABOUT ("/about"),
     SETTINGS ("/settings"),
-    TODO_MENU("/todoList");
+    TODO_MENU("/todoList"),
+    UNSUPPORTED_COMMAND("/unsupported"),
+    WRONG_COMMAND("/wrongCommand");
 
 
 
