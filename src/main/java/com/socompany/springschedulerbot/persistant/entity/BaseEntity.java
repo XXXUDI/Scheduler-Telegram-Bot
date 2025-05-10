@@ -17,6 +17,7 @@ import java.time.Instant;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
 
+
     @CreatedDate
     private Instant createdDate;
 
