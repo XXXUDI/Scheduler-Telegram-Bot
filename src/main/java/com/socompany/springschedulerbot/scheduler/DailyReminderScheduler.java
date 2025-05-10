@@ -24,7 +24,8 @@ public class DailyReminderScheduler {
         log.info("Sending daily reminder messages");
         LocalTime now = LocalTime.now().withSecond(0).withNano(0);
 
-        List<UserResponseDto> users = userService.findByDailyReminderTime(now);
+        List<UserResponseDto> users = userService.findByDailyReminderForReminderAtCurrentTime();
+
 
         for (UserResponseDto dto : users) {
             if(dto.isReminderEnabled()) {

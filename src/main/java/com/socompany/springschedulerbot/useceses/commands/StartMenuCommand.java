@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static com.socompany.springschedulerbot.useceses.commands.enums.CommandType.*;
+
 
 @Component
 @Slf4j
@@ -39,10 +41,10 @@ public class StartMenuCommand implements Command {
                 "Хочеш налаштувати?";
 
         List<ButtonData> buttonDataList = List.of(
-                new ButtonData("🕑 Щоденні нагадування", "/scheduler"),
-                new ButtonData("📝 ToDo список ", "/trends"),
-                new ButtonData("⚙️ Налаштування", "/settings"),
-                new ButtonData("❓ Допомога", "/help")
+                new ButtonData("🕑 Щоденні нагадування", SCHEDULER.getCommand()),
+                new ButtonData("📝 ToDo список ", TODO_MENU.getCommand()),
+                new ButtonData("⚙️ Налаштування", SETTINGS.getCommand()),
+                new ButtonData("❓ Допомога", ABOUT.getCommand())
         );
 
         telegramBotService.editMessage(commonInfo.getChatId(), commonInfo.getMessageId(), answer, buttonDataList, 2, false);

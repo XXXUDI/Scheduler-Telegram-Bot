@@ -13,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -31,8 +33,26 @@ public class UserService {
         return userRepository.findAll().stream().map(userResponseMapper::map).toList();
     }
 
+    // For local debugging
     public List<UserResponseDto> findByDailyReminderTime(LocalTime time) {
         return userRepository.findByDailyReminderTime(time).stream().map(userResponseMapper::map).toList();
+    }
+
+    // Method which supports Time Zone
+    public List<UserResponseDto> findByDailyReminderForReminderAtCurrentTime() {
+        List<User> users = userRepository.findUsersWithAnyReminderEnabled();
+
+        LocalTime nowSystemTime = LocalTime.now().withSecond(0).withNano(0);
+
+        return users.stream()
+                .filter(user -> {
+                    String timeZone = user.getCountryCode().getTimeZone();
+                    LocalTime userLocalTime = nowSystemTime.atDate(LocalDate.now())
+                            .atZone(ZoneId.systemDefault())
+                            .withZoneSameInstant(ZoneId.of(timeZone))
+                            .toLocalTime();
+                    return userLocalTime.equals(user.getDailyReminderTime());
+                        }).map(userResponseMapper::map).toList();
     }
 
     public Optional<UserResponseDto> findByChatId(Long chatId) {
@@ -73,6 +93,17 @@ public class UserService {
         save(newUser);
 
         // Відразу створюємо SchedulerMenu для нового користувача
+    }
+
+    public Optional<UserResponseDto> updateCountryCode(Long chatId, CountryCode countryCode) {
+        return userRepository.findByChatId(chatId)
+                .map(user -> {
+                    UserRequestDto updatedUser = convertUserToUserRequestDto(user);
+                    updatedUser.setCountryCode(countryCode);
+                    return userRequestMapper.map(updatedUser, user);
+                })
+                .map(userRepository::saveAndFlush)
+                .map(userResponseMapper::map);
     }
 
     public Optional<UserResponseDto> toggleReminderOption(Long chatId, CommandType reminderOption) {

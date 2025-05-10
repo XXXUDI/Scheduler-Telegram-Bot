@@ -10,6 +10,7 @@ public enum CommandType {
     CURRENCY ("/currency"),
     CHANGE_DATE ("/changeDate"),
     CHANGE_TIMEZONE("/changeTimezone"),
+    CHANGE_LANGUAGE("/changeLanguage"),
     ABOUT ("/about"),
     SETTINGS ("/settings"),
     TODO_MENU("/todoList"),

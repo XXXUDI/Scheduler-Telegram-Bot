@@ -40,7 +40,9 @@ public class CommandHandlerImpl implements CommandHandler {
             StartMenuCommand startMenuCommand,
             SchedulerMenuCommand schedulerMenuCommand,
             ChangeDateCommand changeDateCommand,
+            ChangeTimeZoneCommand changeTimeZoneCommand,
             SettingsMenuCommand settingsMenuCommand,
+            AboutMenuCommand aboutMenuCommand,
             GoBackCommand goBackCommand,
             UserService userService) {
         this.stateManager = stateManager;
@@ -51,9 +53,11 @@ public class CommandHandlerImpl implements CommandHandler {
 
         // Menu Commands
         commandMap.put(START.getCommand(), startMenuCommand);
+        commandMap.put(ABOUT.getCommand(), aboutMenuCommand);
         commandMap.put(SCHEDULER.getCommand(), schedulerMenuCommand);
         commandMap.put(SETTINGS.getCommand(), settingsMenuCommand);
         commandMap.put(CHANGE_DATE.getCommand(), changeDateCommand);
+        commandMap.put(CHANGE_TIMEZONE.getCommand(), changeTimeZoneCommand);
         // ...
     }
 
@@ -71,7 +75,9 @@ public class CommandHandlerImpl implements CommandHandler {
         }
 
         if(cmd != null) {
-            if(!command.equals("/back") && !TOGGLE_FUNCTIONS.contains(command) && !command.equals(CHANGE_DATE.getCommand())) {
+            // TODO: refactor this
+            if(!command.equals("/back") && !TOGGLE_FUNCTIONS.contains(command)
+                    && !command.equals(CHANGE_DATE.getCommand()) && !command.equals(CHANGE_TIMEZONE.getCommand())) {
                 stateManager.pushState(commonInfo.getChatId(), cmd);
             }
             cmd.execute(commonInfo);

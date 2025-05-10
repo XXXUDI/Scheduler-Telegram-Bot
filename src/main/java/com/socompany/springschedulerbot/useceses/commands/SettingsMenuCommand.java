@@ -12,8 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static com.socompany.springschedulerbot.useceses.commands.enums.CommandType.CHANGE_TIMEZONE;
-import static com.socompany.springschedulerbot.useceses.commands.enums.CommandType.UNSUPPORTED_COMMAND;
+import static com.socompany.springschedulerbot.useceses.commands.enums.CommandType.*;
 
 @Component
 @Slf4j
@@ -48,7 +47,7 @@ public class SettingsMenuCommand implements Command {
 
         List<ButtonData> buttons = List.of(
                 new ButtonData("\uD83C\uDF0D Часовий пояс", CHANGE_TIMEZONE.getCommand()),
-                new ButtonData("\uD83E\uDE99 Валюта для курсів", UNSUPPORTED_COMMAND.getCommand()));
+                new ButtonData("\uD83C\uDF0D Language", CHANGE_LANGUAGE.getCommand()));
 
         telegramBotService.editMessage(commonInfo.getChatId(), commonInfo.getMessageId(), sb.toString(), buttons, 2, true);
 

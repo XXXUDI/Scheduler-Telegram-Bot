@@ -2,24 +2,22 @@ package com.socompany.springschedulerbot.useceses.commands;
 
 import com.socompany.springschedulerbot.common.CommonInfo;
 import com.socompany.springschedulerbot.service.TelegramBotService;
-import com.socompany.springschedulerbot.service.UserService;
 import com.socompany.springschedulerbot.useceses.commands.interfaces.Command;
 import com.socompany.springschedulerbot.useceses.util.SessionManager;
-import com.socompany.springschedulerbot.useceses.util.StateManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.List;
+
+import static com.socompany.springschedulerbot.useceses.commands.enums.CommandType.CHANGE_DATE;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class ChangeDateCommand implements Command {
 
-    private final UserService userService;
     private final SessionManager sessionManager;
     private final TelegramBotService telegramBotService;
 
@@ -27,21 +25,16 @@ public class ChangeDateCommand implements Command {
     public void execute(CommonInfo commonInfo) {
         log.info("Handling change date command for user {}", commonInfo.getChatId());
 
-        sessionManager.setSession(commonInfo.getChatId(), "CHANGE_DATE");
+        sessionManager.setSession(commonInfo.getChatId(), CHANGE_DATE.getCommand());
 
         createAndSendMessage(commonInfo);
 
     }
 
-    private SendMessage createAndSendMessage(CommonInfo commonInfo) {
+    private void createAndSendMessage(CommonInfo commonInfo) {
         String text = "Буль ласка, введи час 🕑," +
                 " коли я буду тобі надсилати щоденні звіти🤗\n\n" +
                 "Вводь у форматі: **00:00**";
-
-        SendMessage msg = new SendMessage();
-        msg.setChatId(commonInfo.getChatId());
-        msg.setText(text);
-        msg.enableMarkdownV2(true);
 
         try {
             log.info("Sending message to user {}", commonInfo.getChatId());
@@ -51,7 +44,6 @@ public class ChangeDateCommand implements Command {
             e.printStackTrace();
         }
 
-        return msg;
     }
 
 

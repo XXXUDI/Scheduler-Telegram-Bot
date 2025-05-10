@@ -2,6 +2,7 @@ package com.socompany.springschedulerbot.repository;
 
 import com.socompany.springschedulerbot.persistant.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalTime;
@@ -16,5 +17,10 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     List<User> findByDailyReminderTime(LocalTime dailyReminderTime);
 
-
+    @Query("SELECT u FROM User u WHERE " +
+            "u.isWeatherReminderEnabled = true OR " +
+            "u.isEventsReminderEnabled = true OR " +
+            "u.isBitcoinPriceReminderEnabled = true OR " +
+            "u.isCurrencyPriceReminderEnabled = true")
+    List<User> findUsersWithAnyReminderEnabled();
 }
