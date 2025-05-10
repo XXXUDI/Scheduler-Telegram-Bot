@@ -41,8 +41,10 @@ public class CommandHandlerImpl implements CommandHandler {
             SchedulerMenuCommand schedulerMenuCommand,
             ChangeDateCommand changeDateCommand,
             ChangeTimeZoneCommand changeTimeZoneCommand,
+            AddTaskCommand addTaskCommand,
             SettingsMenuCommand settingsMenuCommand,
             AboutMenuCommand aboutMenuCommand,
+            ToDoMenuCommand toDoMenuCommand,
             GoBackCommand goBackCommand,
             UserService userService) {
         this.stateManager = stateManager;
@@ -53,7 +55,9 @@ public class CommandHandlerImpl implements CommandHandler {
 
         // Menu Commands
         commandMap.put(START.getCommand(), startMenuCommand);
+        commandMap.put(ADD_TASK.getCommand(), addTaskCommand);
         commandMap.put(ABOUT.getCommand(), aboutMenuCommand);
+        commandMap.put(TODO_MENU.getCommand(), toDoMenuCommand);
         commandMap.put(SCHEDULER.getCommand(), schedulerMenuCommand);
         commandMap.put(SETTINGS.getCommand(), settingsMenuCommand);
         commandMap.put(CHANGE_DATE.getCommand(), changeDateCommand);

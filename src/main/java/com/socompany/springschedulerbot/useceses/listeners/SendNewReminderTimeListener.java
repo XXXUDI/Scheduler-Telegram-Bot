@@ -53,7 +53,7 @@ public class SendNewReminderTimeListener extends MessageAbstractListener {
                         log.error("Failed to send confirmation to user {}", chatId, e);
                     }
 
-                    sessionManager.removeSession(chatId);
+                    sessionManager.clearSession(chatId);
                     return true;
                 } catch (DateTimeParseException e) {
                     log.warn("Time format is invalid for user {}: {}", chatId, text);

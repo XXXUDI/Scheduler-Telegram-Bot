@@ -52,7 +52,7 @@ public class SendNewTimeZoneListener extends MessageAbstractListener {
                     } catch (TelegramApiException e) {
                         log.error("Error sending confirmation to user {}", chatId, e);
                     }
-                    sessionManager.removeSession(chatId);
+                    sessionManager.clearSession(chatId);
                     return true;
 
                 } catch (IllegalArgumentException e) {

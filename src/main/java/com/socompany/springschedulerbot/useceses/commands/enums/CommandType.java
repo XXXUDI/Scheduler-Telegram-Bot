@@ -14,6 +14,8 @@ public enum CommandType {
     ABOUT ("/about"),
     SETTINGS ("/settings"),
     TODO_MENU("/todoList"),
+    ADD_TASK("/addTask"),
+    DELETE_TASK("/deleteTask"),
     UNSUPPORTED_COMMAND("/unsupported"),
     WRONG_COMMAND("/wrongCommand");
 
