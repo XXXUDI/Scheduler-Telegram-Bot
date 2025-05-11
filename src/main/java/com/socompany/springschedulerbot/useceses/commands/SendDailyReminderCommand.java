@@ -3,6 +3,7 @@ package com.socompany.springschedulerbot.useceses.commands;
 import com.socompany.springschedulerbot.common.CommonInfo;
 import com.socompany.springschedulerbot.persistant.dto.ButtonData;
 import com.socompany.springschedulerbot.service.TelegramBotService;
+import com.socompany.springschedulerbot.service.UserService;
 import com.socompany.springschedulerbot.useceses.commands.interfaces.Command;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import static com.socompany.springschedulerbot.useceses.commands.enums.CommandTy
 public class SendDailyReminderCommand implements Command {
 
     private final TelegramBotService telegramBotService;
+    private final UserService userService;
 
     @Override
     public void execute(CommonInfo commonInfo) {
@@ -27,21 +29,27 @@ public class SendDailyReminderCommand implements Command {
     }
 
     private void sendDailyReminderMessage(CommonInfo commonInfo) {
-        String text = "Доброе утро! \uD83C\uDF1E Вот твоя подборка на сегодня:\n" +
-                "\n" +
-                "\uD83D\uDCCD Погода в [Город]: +18°C, ясно ☀\uFE0F  \n" +
-                "\uD83C\uDF89 Праздник: Всемирный день кофе ☕  \n" +
-                "\uD83D\uDCB0 Биткоин: $62,540  \n" +
-                "\uD83D\uDCB1 USD → EUR: 0.92\n" +
-                "\n" +
-                "Хорошего дня! \uD83D\uDE0A\n";
 
-        List<ButtonData> buttons = List.of(new ButtonData("📦 Головне меню", START.getCommand()));
-        try {
-            telegramBotService.createMessage(commonInfo.getChatId(), text, buttons, 1);
-        } catch (TelegramApiException e) {
-            log.error("Error sending message to user {}", commonInfo.getChatId(), e);
-            e.printStackTrace();
-        }
+
+        userService.findByChatId(commonInfo.getChatId()).ifPresentOrElse(user -> {
+            String text = "Доброго ранку! \uD83C\uDF1E Ось твоя підбірка на сьогодні:\n" +
+                    "\n" +
+                    "\uD83D\uDCCD Погода в " + user.getCountryCode().getFlagEmoji() + ": +18°C, ясно ☀\uFE0F  \n" +
+                    "\uD83C\uDF89 Св'ято: Всемирный день кофе ☕  \n" +
+                    "\uD83D\uDCB0 Bitcoin: $62,540  \n" +
+                    "\uD83D\uDCB1 USD → EUR: 0.92\n" +
+                    "\n" +
+                    "Гарного дня! \uD83D\uDE0A\n";
+
+            List<ButtonData> buttons = List.of(new ButtonData("📦 Головне меню", START.getCommand()));
+            try {
+                telegramBotService.createMessage(commonInfo.getChatId(), text, buttons, 1);
+            } catch (TelegramApiException e) {
+                log.error("Error sending message to user {}", commonInfo.getChatId(), e);
+                e.printStackTrace();
+            }
+        }, () -> log.error("Error sending message to user {}", commonInfo.getChatId()));
+
+
     }
 }

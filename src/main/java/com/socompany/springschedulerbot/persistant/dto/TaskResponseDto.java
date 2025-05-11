@@ -11,6 +11,7 @@ import java.time.LocalTime;
 @Setter
 @Getter
 public class TaskResponseDto {
+    private Integer taskId;
     private String taskName;
     private LocalTime reminderTime;
     private UserResponseDto userResponseDto;

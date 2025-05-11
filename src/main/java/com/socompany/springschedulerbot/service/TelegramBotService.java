@@ -47,7 +47,6 @@ public class TelegramBotService extends TelegramLongPollingBot {
 
         List<BotCommand> commandList = List.of(
                 new BotCommand(START.getCommand(), "Отримайте стартове меню бота! 🤖"));
-
         try {
             this.execute(new SetMyCommands(commandList, new BotCommandScopeDefault(), null));
         } catch (TelegramApiException e)  {
@@ -93,6 +92,15 @@ public class TelegramBotService extends TelegramLongPollingBot {
             }
         }
         return false;
+    }
+
+    public void deleteMessage(Long chatId, Integer messageId) {
+        try {
+            execute(new DeleteMessage(chatId.toString(), messageId));
+            log.info("Message with ID {} deleted for chat ID {}", messageId, chatId);
+        } catch (TelegramApiException e) {
+            log.error("Failed to delete message with ID {} in chat ID {}", messageId, chatId, e);
+        }
     }
 
     public void editMessage(Long chatId, int messageId, String text, List<ButtonData> buttons, int buttonsPerRow, boolean showBackButton) {

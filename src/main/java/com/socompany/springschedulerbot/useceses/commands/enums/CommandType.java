@@ -16,6 +16,7 @@ public enum CommandType {
     TODO_MENU("/todoList"),
     ADD_TASK("/addTask"),
     DELETE_TASK("/deleteTask"),
+    CANCEL_DELETING_TASK("/cancelDeletingTask"),
     UNSUPPORTED_COMMAND("/unsupported"),
     WRONG_COMMAND("/wrongCommand");
 

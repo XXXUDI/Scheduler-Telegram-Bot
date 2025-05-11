@@ -16,6 +16,7 @@ public class TaskResponseMapper implements Mapper<Task, TaskResponseDto> {
     @Override
     public TaskResponseDto map(Task from) {
         TaskResponseDto responseDto = new TaskResponseDto();
+        responseDto.setTaskId(from.getTaskId());
         responseDto.setTaskName(from.getTaskName());
         responseDto.setReminderTime(from.getReminderTime());
         responseDto.setUserResponseDto(userResponseMapper.map(from.getUser()));

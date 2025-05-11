@@ -42,6 +42,7 @@ public class CommandHandlerImpl implements CommandHandler {
             ChangeDateCommand changeDateCommand,
             ChangeTimeZoneCommand changeTimeZoneCommand,
             AddTaskCommand addTaskCommand,
+            DeleteTaskCommand deleteTaskCommand,
             SettingsMenuCommand settingsMenuCommand,
             AboutMenuCommand aboutMenuCommand,
             ToDoMenuCommand toDoMenuCommand,
@@ -56,6 +57,7 @@ public class CommandHandlerImpl implements CommandHandler {
         // Menu Commands
         commandMap.put(START.getCommand(), startMenuCommand);
         commandMap.put(ADD_TASK.getCommand(), addTaskCommand);
+        commandMap.put(DELETE_TASK.getCommand(), deleteTaskCommand);
         commandMap.put(ABOUT.getCommand(), aboutMenuCommand);
         commandMap.put(TODO_MENU.getCommand(), toDoMenuCommand);
         commandMap.put(SCHEDULER.getCommand(), schedulerMenuCommand);
@@ -81,7 +83,8 @@ public class CommandHandlerImpl implements CommandHandler {
         if(cmd != null) {
             // TODO: refactor this
             if(!command.equals("/back") && !TOGGLE_FUNCTIONS.contains(command)
-                    && !command.equals(CHANGE_DATE.getCommand()) && !command.equals(CHANGE_TIMEZONE.getCommand())) {
+                    && !command.equals(CHANGE_DATE.getCommand()) && !command.equals(CHANGE_TIMEZONE.getCommand())
+            && !command.equals(DELETE_TASK.getCommand()) && !command.equals(ADD_TASK.getCommand()))  {
                 stateManager.pushState(commonInfo.getChatId(), cmd);
             }
             cmd.execute(commonInfo);

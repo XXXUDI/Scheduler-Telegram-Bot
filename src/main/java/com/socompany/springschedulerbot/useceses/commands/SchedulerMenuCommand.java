@@ -80,7 +80,7 @@ public class SchedulerMenuCommand implements Command {
         return List.of(
                 new ButtonData("☀️ Погода " + EMOJIS.get(user.isWeatherReminderEnabled()), WEATHER.getCommand()),
                 new ButtonData("🎉 Події " + EMOJIS.get(user.isEventsReminderEnabled()), EVENTS.getCommand()),
-                new ButtonData("💰 Курс Біткоїна " + EMOJIS.get(user.isBitcoinPriceReminderEnabled()), BITCOIN.getCommand()),
+                new ButtonData("💰 Курс Bitcoin" + EMOJIS.get(user.isBitcoinPriceReminderEnabled()), BITCOIN.getCommand()),
                 new ButtonData("📈 Курси валют " + EMOJIS.get(user.isCurrencyPriceReminderEnabled()), CURRENCY.getCommand()),
                 new ButtonData("⏰ Час відправки: " + (user.getDailyReminderTime() != null ? user.getDailyReminderTime() : "09:00") + " 🕘 (Змінити)", CHANGE_DATE.getCommand())
         );
