@@ -2,7 +2,6 @@ package com.socompany.springschedulerbot.useceses.commands;
 
 import com.socompany.springschedulerbot.common.CommonInfo;
 import com.socompany.springschedulerbot.persistant.dto.ButtonData;
-import com.socompany.springschedulerbot.persistant.dto.UserRequestDto;
 import com.socompany.springschedulerbot.persistant.dto.UserResponseDto;
 import com.socompany.springschedulerbot.service.TelegramBotService;
 import com.socompany.springschedulerbot.service.UserService;
@@ -33,10 +32,10 @@ public class SchedulerMenuCommand implements Command {
 
     @Override
     public void execute(CommonInfo commonInfo) {
-        createSchedulerMenuMessage(commonInfo);
+        sendSchedulerMenuMessage(commonInfo);
     }
 
-    private void createSchedulerMenuMessage(CommonInfo commonInfo) {
+    private void sendSchedulerMenuMessage(CommonInfo commonInfo) {
         String text = getMenuText();
 
         // Завжди беремо актуальні дані користувача

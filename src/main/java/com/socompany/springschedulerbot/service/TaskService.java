@@ -15,7 +15,6 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -24,7 +23,6 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final TaskResponseMapper responseMapper;
-    private final TaskRequestMapper requestMapper;
     private final UserRepository userRepository;
     private final TaskResponseMapper taskResponseMapper;
 
@@ -58,11 +56,9 @@ public class TaskService {
     public List<TaskResponseDto> findAllTasksByUserChatId(Long chatId) {
         log.info("Fetching tasks for user with chatId {}", chatId);
 
-        // Получаем пользователя через репозиторий
         User user = userRepository.findByChatId(chatId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found for chatId: " + chatId));
 
-        // Возвращаем все задачи, связанные с пользователем
         return taskRepository.findByUser(user).stream().map(responseMapper::map).toList();
     }
 

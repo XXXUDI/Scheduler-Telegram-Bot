@@ -42,7 +42,7 @@ public class SendNewTimeZoneListener extends MessageAbstractListener {
                     log.info("Updated country code for user {}: {}", chatId, countryCode);
 
                     try {
-                        // TODO: add country emoji after time zone info
+
                         String confirmationText = "✅ Часовий пояс встановлено на: "+ countryCode.getTimeZone() + "\n" +
                                 "Твої щоденні нагадування тепер будуть приходити за місцевим часом.\n";
 

@@ -21,6 +21,5 @@ public class BotInitializer {
         log.info("Initializing Bot: {}", bot.getBotUsername());
         TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
         botsApi.registerBot(bot);
-
     }
 }

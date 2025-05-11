@@ -37,7 +37,6 @@ public class AddTaskListener extends MessageAbstractListener {
             String text = update.getMessage().getText();
             Long chatId = update.getMessage().getChatId();
 
-            // Проверка состояния (название задачи)
             if (sessionManager.isAwaitingInput(chatId, ADD_TASK.getCommand())) {
                 sessionManager.setTemporaryData(chatId, "taskTitle", text);
                 sessionManager.setStatus(chatId, AWAITING_TASK_TIME);
@@ -50,7 +49,6 @@ public class AddTaskListener extends MessageAbstractListener {
                 return true;
             }
 
-            // Проверка состояния (время задачи)
             if (sessionManager.isAwaitingInput(chatId, AWAITING_TASK_TIME)) {
                 try {
                     LocalTime taskTime = parseTime(text);
@@ -74,7 +72,7 @@ public class AddTaskListener extends MessageAbstractListener {
                 return true;
             }
         }
-        return false; // Сообщение не обработано
+        return false;
     }
 
     private LocalTime parseTime(String timeText) throws DateTimeParseException {

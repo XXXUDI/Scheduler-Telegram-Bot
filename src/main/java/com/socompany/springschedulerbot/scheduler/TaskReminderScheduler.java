@@ -3,7 +3,6 @@ package com.socompany.springschedulerbot.scheduler;
 import com.socompany.springschedulerbot.persistant.dto.TaskResponseDto;
 import com.socompany.springschedulerbot.service.TaskService;
 import com.socompany.springschedulerbot.service.TelegramBotService;
-import com.socompany.springschedulerbot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

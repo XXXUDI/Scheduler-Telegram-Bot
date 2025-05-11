@@ -1,5 +1,7 @@
 package com.socompany.springschedulerbot.useceses.util;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -13,21 +15,21 @@ public class SessionManager {
     private final Map<Long, UserSession> userSession = new ConcurrentHashMap<>();
 
     /**
-     * Устанавливает сессию с текущим состоянием для пользователя
+     * Sets a session with the current state for the user
      */
     public void setSession(Long chatId, String state) {
         userSession.put(chatId, new UserSession(state));
     }
 
     /**
-     * Удаляет сессию пользователя
+     * Deletes a user session
      */
     public void clearSession(Long chatId) {
         userSession.remove(chatId);
     }
 
     /**
-     * Проверяет, ожидает ли пользователь определенный ввод
+     * Checks if the user is expecting a specific input.
      */
     public boolean isAwaitingInput(Long chatId, String state) {
         UserSession session = userSession.get(chatId);
@@ -35,7 +37,7 @@ public class SessionManager {
     }
 
     /**
-     * Устанавливает временные данные для пользователя
+     * Sets temporary data for the user.
      */
     public void setTemporaryData(Long chatId, String key, String value) {
         UserSession session = userSession.computeIfAbsent(chatId, k -> new UserSession(null));
@@ -43,7 +45,7 @@ public class SessionManager {
     }
 
     /**
-     * Получает временные данные пользователя
+     * Gets temporary user data
      */
     public String getTemporaryData(Long chatId, String key) {
         UserSession session = userSession.get(chatId);
@@ -51,7 +53,7 @@ public class SessionManager {
     }
 
     /**
-     * Устанавливает новый статус (состояние) для сессии пользователя
+     * Sets a new status (state) for a user session
      */
     public void setStatus(Long chatId, String status) {
         UserSession session = userSession.computeIfAbsent(chatId, k -> new UserSession(null));
@@ -59,7 +61,7 @@ public class SessionManager {
     }
 
     /**
-     * Возвращает текущий статус (состояние) пользователя
+     * Returns the current status (state) of the user
      */
     public String getStatus(Long chatId) {
         UserSession session = userSession.get(chatId);
@@ -67,21 +69,15 @@ public class SessionManager {
     }
 
     /**
-     * Внутренний класс для хранения состояния и временных данных пользователя
+     *  Inner class for storing user state and temporary data
      */
     private static class UserSession {
+        @Setter
+        @Getter
         private String state; // Текущее состояние (например, AWAITING_TASK_TITLE)
         private final Map<String, String> temporaryData = new ConcurrentHashMap<>();
 
         public UserSession(String state) {
-            this.state = state;
-        }
-
-        public String getState() {
-            return state;
-        }
-
-        public void setState(String state) {
             this.state = state;
         }
 

@@ -28,16 +28,6 @@ public class UserService {
     private final UserRequestMapper userRequestMapper;
     private final UserResponseMapper userResponseMapper;
 
-
-    public List<UserResponseDto> findAll() {
-        return userRepository.findAll().stream().map(userResponseMapper::map).toList();
-    }
-
-    // For local debugging
-    public List<UserResponseDto> findByDailyReminderTime(LocalTime time) {
-        return userRepository.findByDailyReminderTime(time).stream().map(userResponseMapper::map).toList();
-    }
-
     // Method which supports Time Zone
     public List<UserResponseDto> findByDailyReminderForReminderAtCurrentTime() {
         List<User> users = userRepository.findUsersWithAnyReminderEnabled();

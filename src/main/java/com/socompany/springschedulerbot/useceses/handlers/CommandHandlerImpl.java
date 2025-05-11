@@ -2,8 +2,6 @@ package com.socompany.springschedulerbot.useceses.handlers;
 
 import com.socompany.springschedulerbot.common.CommonInfo;
 
-import com.socompany.springschedulerbot.persistant.dto.UserRequestDto;
-import com.socompany.springschedulerbot.persistant.dto.UserResponseDto;
 import com.socompany.springschedulerbot.service.UserService;
 import com.socompany.springschedulerbot.useceses.commands.*;
 import com.socompany.springschedulerbot.useceses.commands.enums.CommandType;
@@ -47,12 +45,16 @@ public class CommandHandlerImpl implements CommandHandler {
             AboutMenuCommand aboutMenuCommand,
             ToDoMenuCommand toDoMenuCommand,
             GoBackCommand goBackCommand,
+            WrongCommand wrongCommand,
             UserService userService) {
         this.stateManager = stateManager;
         this.userService = userService;
 
         // Back Button Command
         commandMap.put(BACK.getCommand(), goBackCommand);
+
+        // Wrong Command
+        commandMap.put(WRONG_COMMAND.getCommand(), wrongCommand);
 
         // Menu Commands
         commandMap.put(START.getCommand(), startMenuCommand);
@@ -62,6 +64,9 @@ public class CommandHandlerImpl implements CommandHandler {
         commandMap.put(TODO_MENU.getCommand(), toDoMenuCommand);
         commandMap.put(SCHEDULER.getCommand(), schedulerMenuCommand);
         commandMap.put(SETTINGS.getCommand(), settingsMenuCommand);
+
+        // Commands to change time or timezone
+
         commandMap.put(CHANGE_DATE.getCommand(), changeDateCommand);
         commandMap.put(CHANGE_TIMEZONE.getCommand(), changeTimeZoneCommand);
         // ...
@@ -81,16 +86,22 @@ public class CommandHandlerImpl implements CommandHandler {
         }
 
         if(cmd != null) {
-            // TODO: refactor this
-            if(!command.equals("/back") && !TOGGLE_FUNCTIONS.contains(command)
-                    && !command.equals(CHANGE_DATE.getCommand()) && !command.equals(CHANGE_TIMEZONE.getCommand())
-            && !command.equals(DELETE_TASK.getCommand()) && !command.equals(ADD_TASK.getCommand()))  {
+            if(isState(command))  {
                 stateManager.pushState(commonInfo.getChatId(), cmd);
             }
             cmd.execute(commonInfo);
         } else{
             log.warn("Command {} not found in commandMap", command);
+            commandMap.get(WRONG_COMMAND.getCommand()).execute(commonInfo);
         }
     }
 
+    private boolean isState(String command) {
+        return !command.equals("/back") && !TOGGLE_FUNCTIONS.contains(command)
+                && !command.equals(CHANGE_DATE.getCommand()) && !command.equals(CHANGE_TIMEZONE.getCommand())
+                && !command.equals(DELETE_TASK.getCommand()) && !command.equals(ADD_TASK.getCommand())
+                && !command.equals(WRONG_COMMAND.getCommand());
+    }
+
 }
+
